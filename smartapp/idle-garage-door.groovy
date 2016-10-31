@@ -18,7 +18,7 @@ definition(
     name: "Idle Garage Door",
     namespace: "jrlucier",
     author: "Jeremy Lucier",
-    description: "Monitor your garage for inactivity.  If no motion has been detected for X minutes, then close the specified garage door.",
+    description: "Monitor your garage for inactivity.  If no motion has been detected for X minutes, then close the specified garage door(s).",
     category: "Convenience",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Meta/garage_contact.png",
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Meta/garage_contact@2x.png"
@@ -73,7 +73,7 @@ def activityHandler(evt) {
 
 def checkMotion() {
     log.debug "In checkMotion scheduled method"
-	def motionStatesInactive = allMotionStatesInactive()
+    def motionStatesInactive = allMotionStatesInactive()
     def garageDoorsClosed = allGarageDoorsClosed()
     
 	// Check nothing's happening on the motion sensors, and a door is at least up
@@ -81,9 +81,9 @@ def checkMotion() {
     
     	// Ensures we don't trigger the close too early (like if the motion sensor is active during this check)
         if (allMotionSensorsWithinThreshold() == true) {
-            log.debug "Motion has stayed inactive long enough since last check ($elapsed ms):  Closing garage door"
+            log.debug "Motion has stayed inactive long enough since last check ($elapsed ms):  Closing garage door(s)"
             if (sendPush) {
-                sendPush("Closing inactive garage door")
+                sendPush("Closing inactive garage door(s)")
             }
             
             // Close the doors!
@@ -93,7 +93,7 @@ def checkMotion() {
         }
     } else {
         // Motion active; just log it and do nothing
-        log.debug "Motion is active or the garage door is down/moving, do nothing and wait for inactive again. All Garage Doors Closed: $garageDoorsClosed; All Motion States Inactive: $motionStatesInactive"
+        log.debug "Motion is active or the garage door are down/moving, do nothing and wait for inactive again. All Garage Doors Closed: $garageDoorsClosed; All Motion States Inactive: $motionStatesInactive"
     }
 }
 
@@ -101,16 +101,16 @@ def checkMotion() {
 	Check if all of the motion sensors are not in a threshold of reporting active.  If not, we don't want to close a garage door on an active garage!
 **/
 def allMotionSensorsWithinThreshold() {
-	def threshold = 1000 * 60 * minutes
+    def threshold = 1000 * 60 * minutes
     def outOfThreshold = motionSensors.find{m -> m.currentState("motion").date.time < threshold}
-	return (outOfThreshold == null)
+    return (outOfThreshold == null)
 }
 
 /**
 	Are all motion sensors inactive?
 **/
 def allMotionStatesInactive() {
-	def activeSensor = motionSensors.find{m -> m.currentState("motion").value != "inactive"}
+    def activeSensor = motionSensors.find{m -> m.currentState("motion").value != "inactive"}
     return (activeSensor == null)
 }
 
@@ -118,13 +118,13 @@ def allMotionStatesInactive() {
 	Are all garage doors closed?
 **/
 def allGarageDoorsClosed() {
-	def activeDoor = garageDoors.find{g -> g.currentState("door").value != "closed"}
-	return (activeDoor == null)
+     def activeDoor = garageDoors.find{g -> g.currentState("door").value != "closed"}
+     return (activeDoor == null)
 }
 
 /**
 	Close all the open garage doors
 **/
 def closeOpenGarageDoors() {
-	garageDoors.each {g -> if (g.currentState("door").value != "closed") g.close() }
+     garageDoors.each {g -> if (g.currentState("door").value != "closed") g.close() }
 }
