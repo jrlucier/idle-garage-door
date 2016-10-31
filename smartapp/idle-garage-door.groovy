@@ -55,7 +55,7 @@ def updated() {
 
 def initialize() {
 
-	// Fire off the activityHandler when motion stops
+    // Fire off the activityHandler when motion stops
     subscribe(motionSensors, "motion.inactive", activityHandler)
     
     // Subscribe to the garage door opening, so that if somehow
