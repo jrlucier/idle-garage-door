@@ -26,16 +26,15 @@ definition(
 
 
 preferences {
-    section("Motion sensor(s) to monitor") {
-        input "motionSensors", "capability.motionSensor",
-            title: "Motion sensors", multiple: true, required: true
+    section("Motion sensor(s) to monitor for inactivity") {
+        input "motionSensors", "capability.motionSensor", multiple: true, required: true
     }
-    section("Garage door(s) to close") {
+    section("Garage door(s) to monitor and close") {
         input "garageDoors", "capability.garageDoorControl", multiple: true, required: true
     }
-    section("After how many minutes?") {
-		input "minutes", "number", title: "Minutes", required: true
-	}
+    section("Close after how many minutes of inactivity") {
+	input "minutes", "number", title: "Minutes", required: true
+    }
     section("Send push notification?") {
         input "sendPush", "bool", required: false,
               title: "Send Push Notification On Close"
