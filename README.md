@@ -5,7 +5,7 @@ Idle Garage Door SmartApp is a SmartApp for the SmartThings platform that will c
 
 ### Manually:
 1. Log in to the <a href="https://graph.api.smartthings.com/">SmartThings IDE</a>. If you don't have a login yet, create one.
-2. Load contents of <a href="https://raw.githubusercontent.com/jrlucier/idle-garage-door/master/smartapp/idle-garage-door.groovy">Idle Garage Door</a> in SmartApps section. From IDE, navigate to <a href="https://graph.api.smartthings.com/ide/app/create#from-code">My SmartApps > + New SmartApp > From Code</a>. Click Save. Click Publish > "For Me"
+2. Load contents of <a href="https://github.com/jrlucier/idle-garage-door/blob/master/smartapps/jrlucier/idle-garage-door.src/idle-garage-door.groovy">Idle Garage Door</a> in SmartApps section. From IDE, navigate to <a href="https://graph.api.smartthings.com/ide/app/create#from-code">My SmartApps > + New SmartApp > From Code</a>. Click Save. Click Publish > "For Me"
 3. In your mobile app, tap the "+", go to "My Apps" and select Idle Garage Door. Then just choose your motion sensors, garage doors, and timeout.  Congrats, it should work now!
 
 ### SmartThings IDE GitHub Integration:
