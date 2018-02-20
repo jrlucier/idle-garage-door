@@ -33,11 +33,16 @@ preferences {
         input "garageDoors", "capability.garageDoorControl", multiple: true, required: true
     }
     section("Close after how many minutes of inactivity") {
-	input "minutes", "number", title: "Minutes", required: true
+		input "minutes", "number", title: "Minutes", required: true, defaultValue: 10
     }
     section("Send push notification?") {
         input "sendPush", "bool", required: false,
-              title: "Send Push Notification On Close"
+              title: "Send push notification on close"
+    }
+    section("Notify if garage door(s) fail to close?") {
+        input "sendPushOnDoorFailure", "bool", required: false,
+              title: "Send push notification if garage door(s) fail to close"
+		input "checkDoorFailureMinutes", "number", title: "Check door(s) closed after this many minutes", required: true, defaultValue: 2
     }
 }
 
@@ -76,7 +81,7 @@ def checkMotion() {
     def motionStatesInactive = allMotionStatesInactive()
     def garageDoorsClosed = allGarageDoorsClosed()
     
-	// Check nothing's happening on the motion sensors, and a door is at least up
+    // Check nothing's happening on the motion sensors, and a door is at least up
     if (motionStatesInactive == true && garageDoorsClosed == false) {
     
     	// Ensures we don't trigger the close too early (like if the motion sensor is active during this check)
@@ -98,7 +103,7 @@ def checkMotion() {
 }
 
 /**
-	Check if all of the motion sensors are not in a threshold of reporting active.  If not, we don't want to close a garage door on an active garage!
+    Check if all of the motion sensors are not in a threshold of reporting active.  If not, we don't want to close a garage door on an active garage!
 **/
 def allMotionSensorsWithinThreshold() {
     def threshold = 1000 * 60 * minutes
@@ -107,7 +112,7 @@ def allMotionSensorsWithinThreshold() {
 }
 
 /**
-	Are all motion sensors inactive?
+    Are all motion sensors inactive?
 **/
 def allMotionStatesInactive() {
     def activeSensor = motionSensors.find{m -> m.currentState("motion").value != "inactive"}
@@ -115,7 +120,7 @@ def allMotionStatesInactive() {
 }
 
 /**
-	Are all garage doors closed?
+    Are all garage doors closed?
 **/
 def allGarageDoorsClosed() {
      def activeDoor = garageDoors.find{g -> g.currentState("door").value != "closed"}
@@ -123,8 +128,23 @@ def allGarageDoorsClosed() {
 }
 
 /**
-	Close all the open garage doors
+    Close all the open garage doors
 **/
 def closeOpenGarageDoors() {
      garageDoors.each {g -> if (g.currentState("door").value != "closed") g.close() }
+     
+     if(sendPushOnDoorFailure) {
+     	runIn(60 * checkDoorFailureMinutes, checkAndNotifyOfDoorFailure);
+     }
+     
+}
+
+/**
+	Checks and determines if the garage doors closed or not.  If they aren't closed, send notification. Also send it only if there's
+    no activity currently on the motion sensors.
+**/
+def checkAndNotifyOfDoorFailure() {
+	if(!allGarageDoorsClosed() && allMotionStatesInactive()) {
+        sendPush("Garage door(s) failed to close!")
+	}
 }
